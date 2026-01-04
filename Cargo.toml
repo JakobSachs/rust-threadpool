@@ -3,6 +3,21 @@ name = "rust-threadpool"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "rust-threadpool"
+path = "src/main.rs"
+
+[[bin]]
+name = "bench-v1-spinlock"
+path = "src/bin/bench_v1_spinlock.rs"
+
+[[bin]]
+name = "bench-v2-condvar"
+path = "src/bin/bench_v2_condvar.rs"
+
 [profile.release]
 debug = "line-tables-only"
 
