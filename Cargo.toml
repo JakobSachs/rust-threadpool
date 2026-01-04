@@ -3,4 +3,6 @@ name = "rust-threadpool"
 version = "0.1.0"
 edition = "2024"
 
-[dependencies]
+[profile.release]
+debug = "line-tables-only"
+

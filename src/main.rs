@@ -14,7 +14,8 @@ fn collatz(mut n: u64) {
         }
         steps += 1;
     }
-    if original % 10 == 0 {
+    // don't print everything, we want to emulate a compuyte-heavy task
+    if original % 333333 == 0 {
         print!("{original} took {steps} steps to converge\n");
     }
 }
@@ -23,24 +24,29 @@ fn main() {
     use std::time::Instant;
 
     // get pool size from env
-    let pool_size = std::env::var("POOL_SIZE").unwrap_or("1".to_string()).parse().unwrap();
+    let pool_size = std::env::var("POOL_SIZE")
+        .unwrap_or("1".to_string())
+        .parse()
+        .unwrap();
     let pool = pool::Pool::new(pool_size);
-    let count = 100_000_000u64;
+    let count = 500_000_000u64;
 
     let start = Instant::now();
-    for i in 0..count {
-        pool.execute(move || {
+    pool.submit_iter(
+        (move |i| {
             collatz(i);
-        });
-    }
+        })
+        .into(),
+        0..count,
+    );
 
     pool.join_all();
     let elapsed = start.elapsed();
 
-    let per_second = count as f64 / elapsed.as_secs_f64();
+    let per_second = count as f64 / (elapsed.as_secs_f64() * 1000.0);
 
     println!(
-        "[T={}] Processed {} numbers in {:.3}s ({:.0} numbers/sec)",
+        "[T={}] Processed {} numbers in {:.3}s ({:.2} k-numbers/sec)",
         pool_size,
         count,
         elapsed.as_secs_f64(),
