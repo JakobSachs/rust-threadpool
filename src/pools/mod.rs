@@ -1,2 +1,4 @@
 pub mod v1_spinlock;
-pub mod v2_condvar;
+pub mod v2_spinlock_batched;
+pub mod v3_condvar;
+pub mod v5_chunked_range;

@@ -62,6 +62,21 @@ impl Pool {
         });
     }
 
+    // publishes a new task per item in the iterator
+    pub fn submit_iter<F: Fn(T) + Send + Sync + 'static, T: Send + 'static>(
+        &self,
+        func: Arc<F>,
+        iter: impl IntoIterator<Item = T>,
+    ) {
+        let mut queue = self.queue.lock().unwrap();
+        for i in iter {
+            let func = Arc::clone(&func);
+            queue.push(Task {
+                func: Box::new(move || func(i)),
+            });
+        }
+    }
+
     // waits for all tasks to finish, and then joins all threads
     pub fn join_all(self) {
         // wait for all tasks to finish

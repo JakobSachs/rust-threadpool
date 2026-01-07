@@ -7,17 +7,28 @@ edition = "2024"
 path = "src/lib.rs"
 
 [[bin]]
-name = "rust-threadpool"
-path = "src/main.rs"
-
-[[bin]]
 name = "bench-v1-spinlock"
 path = "src/bin/bench_v1_spinlock.rs"
 
 [[bin]]
-name = "bench-v2-condvar"
-path = "src/bin/bench_v2_condvar.rs"
+name = "bench-v2-spinlock-batched"
+path = "src/bin/bench_v2_spinlock_batched.rs"
+
+[[bin]]
+name = "bench-v3-condvar"
+path = "src/bin/bench_v3_condvar.rs"
+
+[[bin]]
+name = "bench-v4-condvar"
+path = "src/bin/bench_v4_condvar.rs"
+
+[[bin]]
+name = "bench-v5-chunked-range"
+path = "src/bin/bench_v5_chunked_range.rs"
 
 [profile.release]
 debug = "line-tables-only"
+
+[dependencies]
+itertools = "0.14.0"
 

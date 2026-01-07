@@ -2,6 +2,8 @@ use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::sync::{Arc, Condvar, Mutex};
 use std::thread::{self, JoinHandle};
 
+use itertools::Itertools;
+
 struct Task {
     pub func: Box<dyn FnOnce() -> () + Send>,
 }
@@ -71,16 +73,23 @@ impl Pool {
         &self,
         func: Arc<F>,
         iter: impl IntoIterator<Item = T>,
+        chunk_size: usize,
     ) {
         let mut queue = self.queue.lock().unwrap();
-        for i in iter {
+        for chunk in &iter.into_iter().chunks(chunk_size) {
             let func = Arc::clone(&func);
+            let batch: Vec<T> = chunk.collect();
             queue.push(Task {
-                func: Box::new(move || func(i)),
+                func: Box::new(move || {
+                    for item in batch {
+                        func(item);
+                    }
+                }),
             });
         }
         self.condvar.notify_all();
     }
+
     // waits for all tasks to finish, and then joins all threads
     pub fn join_all(self) {
         // wait for all tasks to finish
