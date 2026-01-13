@@ -26,6 +26,10 @@ path = "src/bin/bench_v4_condvar_batched.rs"
 name = "bench-v5-condvar-chunked"
 path = "src/bin/bench_v5_condvar_chunked.rs"
 
+[[bin]]
+name = "bench-v6-condvar-completion"
+path = "src/bin/bench_v6_condvar_completion.rs"
+
 [profile.release]
 debug = "line-tables-only"
 
