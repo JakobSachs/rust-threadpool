@@ -1,5 +1,5 @@
 use rust_threadpool::bench::{TASK_COUNT, collatz};
-use rust_threadpool::pools::v5_chunked_range;
+use rust_threadpool::pools::v5_condvar_chunked;
 use std::sync::Arc;
 
 fn main() {
@@ -10,7 +10,7 @@ fn main() {
         .unwrap_or("1".to_string())
         .parse()
         .unwrap();
-    let pool = v5_chunked_range::Pool::new(pool_size);
+    let pool = v5_condvar_chunked::Pool::new(pool_size);
 
     let start = Instant::now();
     pool.submit_iter(
@@ -27,7 +27,7 @@ fn main() {
     let per_second = TASK_COUNT as f64 / (elapsed.as_secs_f64() * 1000.0);
 
     println!(
-        "[V5-chunked-range T={}] Processed {} numbers in {:.3}s ({:.2} k-numbers/sec)",
+        "[V5-condvar-chunked T={}] Processed {} numbers in {:.3}s ({:.2} k-numbers/sec)",
         pool_size,
         TASK_COUNT,
         elapsed.as_secs_f64(),

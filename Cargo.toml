@@ -19,12 +19,12 @@ name = "bench-v3-condvar"
 path = "src/bin/bench_v3_condvar.rs"
 
 [[bin]]
-name = "bench-v4-condvar"
-path = "src/bin/bench_v4_condvar.rs"
+name = "bench-v4-condvar-batched"
+path = "src/bin/bench_v4_condvar_batched.rs"
 
 [[bin]]
-name = "bench-v5-chunked-range"
-path = "src/bin/bench_v5_chunked_range.rs"
+name = "bench-v5-condvar-chunked"
+path = "src/bin/bench_v5_condvar_chunked.rs"
 
 [profile.release]
 debug = "line-tables-only"

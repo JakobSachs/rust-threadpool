@@ -5,6 +5,8 @@ set title 'Threadpool Performance Comparison'
 set xlabel 'Pool Size (threads)'
 set ylabel 'Runtime (seconds)'
 
+set logscale xy
+
 set xtics (1, 2, 4, 8, 16, 32)
 set grid
 set key outside right top

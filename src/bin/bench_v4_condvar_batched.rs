@@ -1,5 +1,5 @@
 use rust_threadpool::bench::{TASK_COUNT, collatz};
-use rust_threadpool::pools::v3_condvar;
+use rust_threadpool::pools::v4_condvar_batched;
 use std::sync::Arc;
 
 fn main() {
@@ -10,7 +10,7 @@ fn main() {
         .unwrap_or("1".to_string())
         .parse()
         .unwrap();
-    let pool = v3_condvar::Pool::new(pool_size);
+    let pool = v4_condvar_batched::Pool::new(pool_size);
 
     let start = Instant::now();
     pool.submit_iter(
@@ -26,7 +26,7 @@ fn main() {
     let per_second = TASK_COUNT as f64 / (elapsed.as_secs_f64() * 1000.0);
 
     println!(
-        "[V4-condvar-iter T={}] Processed {} numbers in {:.3}s ({:.2} k-numbers/sec)",
+        "[V4-condvar-batched T={}] Processed {} numbers in {:.3}s ({:.2} k-numbers/sec)",
         pool_size,
         TASK_COUNT,
         elapsed.as_secs_f64(),
