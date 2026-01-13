@@ -18,7 +18,7 @@ fn main() {
             collatz(i);
         }),
         0..TASK_COUNT,
-        TASK_COUNT as usize / pool_size,
+        TASK_COUNT as usize / (2 * pool_size),
     );
 
     pool.join_all();
