@@ -2,9 +2,9 @@
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
-#include <iostream>
+#include <cstdio>
 
-constexpr uint64_t TASK_COUNT = 50'000'000;
+constexpr uint64_t TASK_COUNT = 10'000'000;
 constexpr uint64_t PRINT_INTERVAL = 333333;
 
 void collatz(uint64_t n) {
@@ -21,9 +21,8 @@ void collatz(uint64_t n) {
         }
         steps++;
     }
-    // don't print everything, we want to emulate a compute-heavy task
     if (original % PRINT_INTERVAL == 0) {
-        printf("%lu took %u steps to converge\n", original, steps);
+        printf("%llu took %u steps to converge\n", (unsigned long long)original, steps);
     }
 }
 
@@ -47,8 +46,8 @@ int main() {
 
     double per_second = TASK_COUNT / (elapsed.count() * 1000.0);
 
-    printf("[CPP-BS T=%d] Processed %lu numbers in %.3fs (%.2f k-numbers/sec)\n",
-           pool_size, TASK_COUNT, elapsed.count(), per_second);
+    printf("[CPP-BS T=%d] Processed %llu numbers in %.3fs (%.2f k-numbers/sec)\n",
+           pool_size, (unsigned long long)TASK_COUNT, elapsed.count(), per_second);
 
     return 0;
 }

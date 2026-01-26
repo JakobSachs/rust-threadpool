@@ -6,28 +6,26 @@
 OUTPUT_FILE = "benchmark_plot.svg"
 
 # Plot title
-TITLE = "Threadpool Performance Comparison"
 
 # Index range for implementations (1-based, excludes baseline which is always shown)
 # Set both to 0 to include all implementations
-START_INDEX = 5
-END_INDEX = 6
+START_INDEX = 1
+END_INDEX = 3
 
 # ============================================================
 
 set terminal svg size 1200,700 enhanced font 'monospace,14' background '#ffffff'
 set output OUTPUT_FILE
 
-set title TITLE font ',24'
-set xlabel 'Pool Size (threads)' font ',18'
-set ylabel 'Runtime (seconds)' font ',18'
-set key font ',18'
+set xlabel 'Pool Size (threads)' font ',30'
+set ylabel 'Runtime (seconds)' font ',30'
+set key font ',30'
 
 set logscale xy
-set xrange [1:32]
-set yrange [0.7:8]
+set xrange [1:16]
+#set yrange [0.1:1.5]
 
-set xtics (1, 2, 4, 8, 16, 32)
+set xtics (1, 2, 4, 8, 16)
 set grid
 set key outside right top
 
@@ -37,12 +35,12 @@ set key outside right top
 
 # Baseline style: solid dark gray, thick line, filled circles
 BASELINE_COLOR = '#555555'
-BASELINE_LW = 3
-BASELINE_PT = 5   # filled circle
+BASELINE_LW = 5
+BASELINE_PT = 7   # filled circle
 BASELINE_PS = 1.5
 
 # Implementation palette: consistent style, varying colors
-IMPL_LW = 2
+IMPL_LW = 5
 IMPL_PT = 7       # filled circle for all
 IMPL_PS = 1.2
 

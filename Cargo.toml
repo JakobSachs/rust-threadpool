@@ -7,28 +7,20 @@ edition = "2024"
 path = "src/lib.rs"
 
 [[bin]]
-name = "bench-v1-spinlock"
-path = "src/bin/bench_v1_spinlock.rs"
+name = "bench-v1-simple"
+path = "src/bin/bench_v1_simple.rs"
 
 [[bin]]
-name = "bench-v2-spinlock-batched"
-path = "src/bin/bench_v2_spinlock_batched.rs"
+name = "bench-v2-simple-batched"
+path = "src/bin/bench_v2_simple_batched.rs"
 
 [[bin]]
-name = "bench-v3-condvar"
-path = "src/bin/bench_v3_condvar.rs"
+name = "bench-v3-simple-chunked"
+path = "src/bin/bench_v3_simple_chunked.rs"
 
 [[bin]]
-name = "bench-v4-condvar-batched"
-path = "src/bin/bench_v4_condvar_batched.rs"
-
-[[bin]]
-name = "bench-v5-condvar-chunked"
-path = "src/bin/bench_v5_condvar_chunked.rs"
-
-[[bin]]
-name = "bench-v6-condvar-completion"
-path = "src/bin/bench_v6_condvar_completion.rs"
+name = "bench-v4-condvar-completion"
+path = "src/bin/bench_v4_condvar_completion.rs"
 
 [profile.release]
 debug = "line-tables-only"

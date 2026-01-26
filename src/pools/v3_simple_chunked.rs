@@ -1,5 +1,5 @@
-use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
-use std::sync::{Arc, Condvar, Mutex};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
 
 use itertools::Itertools;
@@ -10,8 +10,6 @@ struct Task {
 
 pub struct Pool {
     threads: Vec<JoinHandle<()>>,
-    condvar: Arc<Condvar>,
-    executing: Arc<AtomicU32>,
     queue: Arc<Mutex<Vec<Task>>>,
     done: Arc<AtomicBool>,
 }
@@ -21,31 +19,32 @@ impl Pool {
         let mut threads = Vec::with_capacity(size);
         let queue = Arc::new(Mutex::new(Vec::<Task>::new()));
         let done = Arc::new(AtomicBool::new(false));
-        let executing = Arc::new(AtomicU32::new(0));
-        let condvar = Arc::new(Condvar::new());
 
         // spawn threads
         for _ in 0..size {
             let queue: Arc<Mutex<Vec<Task>>> = queue.clone();
             let done = done.clone();
-            let condvar = condvar.clone();
-            let executing = executing.clone();
-
-            // worker thread code
             threads.push(thread::spawn(move || {
+                let mut sleep_counter = 1;
                 loop {
-                    let mut guard = queue.lock().unwrap();
-                    while guard.is_empty() && !done.load(Ordering::Acquire) {
-                        guard = condvar.wait(guard).unwrap();
+                    // check if we should stop
+                    if done.load(Ordering::Relaxed) {
+                        break;
                     }
-                    if guard.is_empty() {
-                        break; // all tasks are done and done is set
+
+                    // get task
+                    let task = {
+                        let mut queue = queue.lock().unwrap();
+                        queue.pop()
+                    };
+
+                    if let Some(task) = task {
+                        (task.func)();
+                    } else {
+                        // no task, sleep a bit with exponential backoff
+                        thread::sleep(std::time::Duration::from_nanos(1 << sleep_counter));
+                        sleep_counter += 1;
                     }
-                    let task = guard.pop().unwrap();
-                    drop(guard);
-                    executing.fetch_add(1, Ordering::Relaxed);
-                    (task.func)();
-                    executing.fetch_sub(1, Ordering::Relaxed);
                 }
             }));
         }
@@ -53,8 +52,6 @@ impl Pool {
         Pool {
             threads: threads,
             queue: queue,
-            condvar: condvar,
-            executing: executing,
             done: done,
         }
     }
@@ -65,10 +62,9 @@ impl Pool {
         queue.push(Task {
             func: Box::new(func),
         });
-        self.condvar.notify_one();
     }
 
-    // publishes a new task per item in the iterator
+    // publishes a new task per chunk in the iterator
     pub fn submit_iter<F: Fn(T) + Send + Sync + 'static, T: Send + 'static>(
         &self,
         func: Arc<F>,
@@ -87,22 +83,18 @@ impl Pool {
                 }),
             });
         }
-        self.condvar.notify_all();
     }
 
     // waits for all tasks to finish, and then joins all threads
     pub fn join_all(self) {
         // wait for all tasks to finish
         let mut sleep_counter = 1;
-        self.done.store(true, Ordering::Release);
-        self.condvar.notify_all();
-        while self.executing.load(Ordering::Relaxed) > 0 {
-            std::thread::sleep(std::time::Duration::from_nanos(std::cmp::max(
-                1000,
-                std::cmp::min(100_000_000, 1 << sleep_counter),
-            )));
+        while !self.queue.lock().unwrap().is_empty() {
+            thread::sleep(std::time::Duration::from_nanos(1 << sleep_counter));
             sleep_counter += 1;
         }
+
+        self.done.store(true, Ordering::Relaxed);
         for thread in self.threads.into_iter() {
             thread.join().unwrap();
         }

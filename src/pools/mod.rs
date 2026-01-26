@@ -1,6 +1,4 @@
-pub mod v1_spinlock;
-pub mod v2_spinlock_batched;
-pub mod v3_condvar;
-pub mod v4_condvar_batched;
-pub mod v5_condvar_chunked;
-pub mod v6_condvar_completion;
+pub mod v1_simple;
+pub mod v2_simple_batched;
+pub mod v3_simple_chunked;
+pub mod v4_condvar_completion;

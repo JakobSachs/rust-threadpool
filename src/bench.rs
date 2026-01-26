@@ -1,4 +1,4 @@
-pub const TASK_COUNT: u64 = 50_000_000;
+pub const TASK_COUNT: u64 = 10_000_000;
 pub const PRINT_INTERVAL: u64 = 333333;
 
 pub fn collatz(mut n: u64) {

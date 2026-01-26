@@ -1,6 +1,5 @@
 use rust_threadpool::bench::{TASK_COUNT, collatz};
-use rust_threadpool::pools::v2_spinlock_batched;
-use std::sync::Arc;
+use rust_threadpool::pools::v1_simple;
 
 fn main() {
     use std::time::Instant;
@@ -10,15 +9,14 @@ fn main() {
         .unwrap_or("1".to_string())
         .parse()
         .unwrap();
-    let pool = v2_spinlock_batched::Pool::new(pool_size);
+    let pool = v1_simple::Pool::new(pool_size);
 
     let start = Instant::now();
-    pool.submit_iter(
-        Arc::new(move |i| {
+    for i in 0..TASK_COUNT {
+        pool.submit(move || {
             collatz(i);
-        }),
-        0..TASK_COUNT,
-    );
+        });
+    }
 
     pool.join_all();
     let elapsed = start.elapsed();
@@ -26,7 +24,7 @@ fn main() {
     let per_second = TASK_COUNT as f64 / (elapsed.as_secs_f64() * 1000.0);
 
     println!(
-        "[V2-spinlock-batched T={}] Processed {} numbers in {:.3}s ({:.2} k-numbers/sec)",
+        "[V1-simple T={}] Processed {} numbers in {:.3}s ({:.2} k-numbers/sec)",
         pool_size,
         TASK_COUNT,
         elapsed.as_secs_f64(),

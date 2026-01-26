@@ -1,7 +1,7 @@
 .PHONY: all clean run
 
-CXX = g++
-CXXFLAGS = -std=c++17 -O3 -Wall -Wextra -pthread -march=native
+CXX = clang++
+CXXFLAGS = -std=c++17 -O3 -flto -Wall -Wextra -mcpu=native -pthread -ffast-math -fno-exceptions -DNDEBUG
 TARGET = bench
 
 all: $(TARGET)

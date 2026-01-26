@@ -56,7 +56,7 @@ for bin in "${BINARIES[@]}"; do
     echo "=== Benchmarking $name ==="
     echo "# pool_size runtime_secs throughput_k_per_sec" > "$output"
 
-    for size in 1 2 4 8 16 32; do
+    for size in 1 2 4 8 16; do
         echo "  Pool size $size..."
 
         # Run 3 times and average the results
@@ -67,16 +67,16 @@ for bin in "${BINARIES[@]}"; do
 
             # Extract runtime and throughput from output like:
             # [V1-spinlock T=4] Processed 500000000 numbers in 1.234s (12345.67 k-numbers/sec)
-            runtime=$(echo "$result" | grep -oP 'in \K[0-9.]+(?=s)')
-            throughput=$(echo "$result" | grep -oP '\(\K[0-9.]+(?= k-numbers)')
+            runtime=$(echo "$result" | sed -n 's/.*in \([0-9.]*\)s.*/\1/p')
+            throughput=$(echo "$result" | sed -n 's/.*(\([0-9.]*\) k-numbers.*/\1/p')
 
             sum_runtime=$(echo "$sum_runtime + $runtime" | bc)
             sum_throughput=$(echo "$sum_throughput + $throughput" | bc)
         done
 
-        # Calculate averages
-        avg_runtime=$(echo "scale=3; $sum_runtime / 3" | bc)
-        avg_throughput=$(echo "scale=2; $sum_throughput / 3" | bc)
+        # Calculate averages (sed adds leading zero for decimals < 1)
+        avg_runtime=$(echo "scale=3; $sum_runtime / 3" | bc | sed 's/^\./0./')
+        avg_throughput=$(echo "scale=2; $sum_throughput / 3" | bc | sed 's/^\./0./')
 
         echo "$size $avg_runtime $avg_throughput" >> "$output"
     done
