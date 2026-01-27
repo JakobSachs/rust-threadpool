@@ -43,7 +43,9 @@ impl Pool {
                         (task.func)();
                     } else {
                         // no task, sleep a bit with exponential backoff
-                        thread::sleep(std::time::Duration::from_nanos(1 << sleep_counter));
+                        thread::sleep(std::time::Duration::from_nanos(
+                            (1 << sleep_counter).min(100_000_000),
+                        ));
                         sleep_counter += 1;
                     }
                 }
@@ -93,7 +95,9 @@ impl Pool {
         // wait for all tasks to finish
         let mut sleep_counter = 1;
         while !self.queue.lock().unwrap().is_empty() {
-            thread::sleep(std::time::Duration::from_nanos(1 << sleep_counter));
+            thread::sleep(std::time::Duration::from_nanos(
+                (1 << sleep_counter).min(100_000_000),
+            ));
             sleep_counter += 1;
         }
 

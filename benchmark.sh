@@ -63,7 +63,12 @@ for bin in "${BINARIES[@]}"; do
         sum_runtime=0
         sum_throughput=0
         for run in 1 2 3; do
-            result=$(POOL_SIZE=$size "$bin" 2>&1 | tail -1)
+            if command -v numactl &> /dev/null; then
+              result=$(POOL_SIZE=$size numactl --cpubind=0 --membind=0 "$bin" 2>&1 | tail -1)
+            else
+              echo "no numactl"
+              result=$(POOL_SIZE=$size "$bin" 2>&1 | tail -1)
+            fi
 
             # Extract runtime and throughput from output like:
             # [V1-spinlock T=4] Processed 500000000 numbers in 1.234s (12345.67 k-numbers/sec)

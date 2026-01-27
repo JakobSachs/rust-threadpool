@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <cstdio>
 
-constexpr uint64_t TASK_COUNT = 10'000'000;
+constexpr uint64_t TASK_COUNT = 50'000'000;
 constexpr uint64_t PRINT_INTERVAL = 333333;
 
 void collatz(uint64_t n) {
