@@ -1,3 +1,4 @@
+use std::collections::VecDeque;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
@@ -8,19 +9,19 @@ struct Task {
 
 pub struct Pool {
     threads: Vec<JoinHandle<()>>,
-    queue: Arc<Mutex<Vec<Task>>>,
+    queue: Arc<Mutex<VecDeque<Task>>>,
     done: Arc<AtomicBool>,
 }
 
 impl Pool {
     pub fn new(size: usize) -> Pool {
         let mut threads = Vec::with_capacity(size);
-        let queue = Arc::new(Mutex::new(Vec::<Task>::new()));
+        let queue = Arc::new(Mutex::new(VecDeque::<Task>::new()));
         let done = Arc::new(AtomicBool::new(false));
 
         // spawn threads
         for _ in 0..size {
-            let queue: Arc<Mutex<Vec<Task>>> = queue.clone();
+            let queue: Arc<Mutex<VecDeque<Task>>> = queue.clone();
             let done = done.clone();
             threads.push(thread::spawn(move || {
                 let mut sleep_counter = 1;
@@ -33,7 +34,7 @@ impl Pool {
                     // get task
                     let task = {
                         let mut queue = queue.lock().unwrap();
-                        queue.pop()
+                        queue.pop_front()
                     };
 
                     if let Some(task) = task {
@@ -57,7 +58,7 @@ impl Pool {
     //publishes a new task to the pool
     pub fn submit<F: FnOnce() -> () + Send + 'static>(&self, func: F) {
         let mut queue = self.queue.lock().unwrap();
-        queue.push(Task {
+        queue.push_back(Task {
             func: Box::new(func),
         });
     }
@@ -68,10 +69,14 @@ impl Pool {
         func: Arc<F>,
         iter: impl IntoIterator<Item = T>,
     ) {
+        // Collect the iterator to know its size and preallocate queue space
+        let items: Vec<T> = iter.into_iter().collect();
         let mut queue = self.queue.lock().unwrap();
-        for i in iter {
+        queue.reserve(items.len());
+
+        for i in items {
             let func = Arc::clone(&func);
-            queue.push(Task {
+            queue.push_back(Task {
                 func: Box::new(move || func(i)),
             });
         }

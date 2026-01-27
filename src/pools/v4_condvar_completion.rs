@@ -1,3 +1,4 @@
+use std::collections::VecDeque;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::sync::{Arc, Condvar, Mutex};
 use std::thread::{self, JoinHandle};
@@ -13,14 +14,14 @@ pub struct Pool {
     work_condvar: Arc<Condvar>,
     completion_condvar: Arc<Condvar>,
     executing: Arc<AtomicU32>,
-    queue: Arc<Mutex<Vec<Task>>>,
+    queue: Arc<Mutex<VecDeque<Task>>>,
     done: Arc<AtomicBool>,
 }
 
 impl Pool {
     pub fn new(size: usize) -> Pool {
         let mut threads = Vec::with_capacity(size);
-        let queue = Arc::new(Mutex::new(Vec::<Task>::new()));
+        let queue = Arc::new(Mutex::new(VecDeque::<Task>::new()));
         let done = Arc::new(AtomicBool::new(false));
         let executing = Arc::new(AtomicU32::new(0));
         let work_condvar = Arc::new(Condvar::new());
@@ -28,7 +29,7 @@ impl Pool {
 
         // spawn threads
         for _ in 0..size {
-            let queue: Arc<Mutex<Vec<Task>>> = queue.clone();
+            let queue: Arc<Mutex<VecDeque<Task>>> = queue.clone();
             let done = done.clone();
             let work_condvar = work_condvar.clone();
             let completion_condvar = completion_condvar.clone();
@@ -44,7 +45,7 @@ impl Pool {
                     if guard.is_empty() {
                         break; // all tasks are done and done is set
                     }
-                    let task = guard.pop().unwrap();
+                    let task = guard.pop_front().unwrap();
                     drop(guard);
                     executing.fetch_add(1, Ordering::Relaxed);
                     (task.func)();
@@ -70,7 +71,7 @@ impl Pool {
     //publishes a new task to the pool
     pub fn submit<F: FnOnce() -> () + Send + 'static>(&self, func: F) {
         let mut queue = self.queue.lock().unwrap();
-        queue.push(Task {
+        queue.push_back(Task {
             func: Box::new(func),
         });
         self.work_condvar.notify_one();
@@ -86,8 +87,10 @@ impl Pool {
         let mut queue = self.queue.lock().unwrap();
         for chunk in &iter.into_iter().chunks(chunk_size) {
             let func = Arc::clone(&func);
-            let batch: Vec<T> = chunk.collect();
-            queue.push(Task {
+            // prealloc batch with chunk_size capacity
+            let mut batch = Vec::with_capacity(chunk_size);
+            batch.extend(chunk);
+            queue.push_back(Task {
                 func: Box::new(move || {
                     for item in batch {
                         func(item);

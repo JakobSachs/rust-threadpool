@@ -9,8 +9,8 @@ OUTPUT_FILE = "benchmark_plot.svg"
 
 # Index range for implementations (1-based, excludes baseline which is always shown)
 # Set both to 0 to include all implementations
-START_INDEX = 1
-END_INDEX = 3
+START_INDEX = 3
+END_INDEX = 4
 
 # ============================================================
 
@@ -23,7 +23,7 @@ set key font ',30'
 
 set logscale xy
 set xrange [1:16]
-#set yrange [0.1:1.5]
+set yrange [0.2:2]
 
 set xtics (1, 2, 4, 8, 16)
 set grid
