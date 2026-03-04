@@ -18,8 +18,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "lock-free"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5de9344a228a711692e202ff830cfa566f1ed214dc5b0f38c2e8f7ab06da8315"
+
+[[package]]
 name = "rust-threadpool"
 version = "0.1.0"
 dependencies = [
  "itertools",
+ "lock-free",
 ]

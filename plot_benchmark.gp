@@ -10,7 +10,7 @@ OUTPUT_FILE = "benchmark_plot.svg"
 # Index range for implementations (1-based, excludes baseline which is always shown)
 # Set both to 0 to include all implementations
 START_INDEX = 3
-END_INDEX = 4
+END_INDEX = 5
 
 # ============================================================
 

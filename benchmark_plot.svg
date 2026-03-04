@@ -170,7 +170,20 @@
 	<use xlink:href='#gpPt6' transform='translate(1121.95,133.51) scale(6.30)' color='rgb(242, 142,  43)'/>
 </g>
 	</g>
-<g fill="none" color="#FFFFFF" stroke="rgb(242, 142,  43)" stroke-width="2.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g id="gnuplot_plot_4" ><title>v5-cas</title>
+<g fill="none" color="black" stroke="currentColor" stroke-width="5.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<g transform="translate(1053.70,188.26)" stroke="none" fill="black" font-family="monospace" font-size="30.00"  text-anchor="end">
+		<text><tspan font-family="monospace" >v5-cas</tspan></text>
+	</g>
+</g>
+<g fill="none" color="black" stroke="currentColor" stroke-width="5.00" stroke-linecap="butt" stroke-linejoin="miter">
+	<path stroke='rgb(225,  87,  89)'  d='M1074.70,178.51 L1169.20,178.51 M254.26,21.01 L329.09,119.99 L461.10,237.94 L593.12,247.11  '/>	<use xlink:href='#gpPt6' transform='translate(329.09,119.99) scale(6.30)' color='rgb(225,  87,  89)'/>
+	<use xlink:href='#gpPt6' transform='translate(461.10,237.94) scale(6.30)' color='rgb(225,  87,  89)'/>
+	<use xlink:href='#gpPt6' transform='translate(593.12,247.11) scale(6.30)' color='rgb(225,  87,  89)'/>
+	<use xlink:href='#gpPt6' transform='translate(1121.95,178.51) scale(6.30)' color='rgb(225,  87,  89)'/>
+</g>
+	</g>
+<g fill="none" color="#FFFFFF" stroke="rgb(225,  87,  89)" stroke-width="2.00" stroke-linecap="butt" stroke-linejoin="miter">
 </g>
 <g fill="none" color="black" stroke="currentColor" stroke-width="2.00" stroke-linecap="butt" stroke-linejoin="miter">
 </g>

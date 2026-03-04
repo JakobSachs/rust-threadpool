@@ -22,9 +22,14 @@ path = "src/bin/bench_v3_simple_chunked.rs"
 name = "bench-v4-condvar-completion"
 path = "src/bin/bench_v4_condvar_completion.rs"
 
+[[bin]]
+name = "bench-v5-cas"
+path = "src/bin/bench_v5_cas.rs"
+
 [profile.release]
 debug = "line-tables-only"
 
 [dependencies]
 itertools = "0.14.0"
+lock-free = "0.1.2"
 
